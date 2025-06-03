@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect} from 'react';
+import {useContext, useEffect} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,12 +14,14 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import {settings, userPages} from "../../../utils/contants/navigation.ts";
 import {useLocation, useNavigate} from "react-router-dom";
-import {LightMode} from '@mui/icons-material';
+import {DarkMode, LightMode} from '@mui/icons-material';
+import {ThemeContext} from "../../../utils/contexts/ThemeContext.ts";
 
 function Header() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [currentPage, setCurrentPage] = React.useState<string | null>(null);
+    const {currentTheme, dispatchCurrentTheme} = useContext(ThemeContext);
     const pathName = useLocation();
     const navigate = useNavigate();
 
@@ -67,7 +69,16 @@ function Header() {
         <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <LightMode sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
+                    <IconButton onClick={() => {
+                        dispatchCurrentTheme(currentTheme === 'dark' ? 'light' : 'dark')
+                        localStorage.setItem('theme', currentTheme === 'dark' ? 'light' : 'dark');
+                    }}>
+                        {currentTheme === 'dark' ? (
+                            <LightMode fontSize={'large'} sx={{display: {xs: 'none', sm: 'flex'}, color: 'primary'}}/>
+                        ) : (
+                            <DarkMode fontSize={'large'} sx={{display: {xs: 'none', sm: 'flex'}, color: 'secondary'}}/>
+                        )}
+                    </IconButton>
 
                     <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
                         <IconButton
@@ -106,8 +117,16 @@ function Header() {
                             ))}
                         </Menu>
                     </Box>
-                    <LightMode sx={{display: {xs: 'flex', md: 'none'}, mr: 1}}/>
-
+                    <IconButton onClick={() => {
+                        dispatchCurrentTheme(currentTheme === 'dark' ? 'light' : 'dark')
+                        localStorage.setItem('theme', currentTheme === 'dark' ? 'light' : 'dark');
+                    }}>
+                        {currentTheme === 'dark' ? (
+                            <LightMode fontSize={'large'} sx={{display: {xs: 'flex', sm: 'none'}, color: 'primary'}}/>
+                        ) : (
+                            <DarkMode fontSize={'large'} sx={{display: {xs: 'flex', sm: 'none'}, color: 'secondary'}}/>
+                        )}
+                    </IconButton>
                     <Box sx={{flexGrow: 1, gap: 2, display: {xs: 'none', md: 'flex', justifyContent: 'center'}}}>
                         {userPages.map((page) => (
                             <Button
