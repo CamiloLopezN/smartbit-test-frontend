@@ -15,6 +15,9 @@ export const userPages: INavigationPage[] = [
     {label: 'Movimientos', path: 'movements', icon: CreditCard},
     {label: 'Consultas y Reportes', path: 'reports', icon: ContactPage},
 ];
-export const settings = ['Inicio', 'Perfil', 'Configuración', 'Cerrar sesión'];
+export const settings = [
+    {label: 'Inicio', path: 'home'},
+    {label: 'Cerrar sesión', path: 'logout'}
+];
 
 

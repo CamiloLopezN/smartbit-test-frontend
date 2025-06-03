@@ -1,12 +1,22 @@
 import LoginForm from "./loginForm/LoginForm.tsx";
 import {Box, Button, Divider, Grid, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import {useState} from "react";
+import {login} from "../../api/userService.ts";
 
 function LoginPage() {
     const navigate = useNavigate();
+    const [userName, setUserName] = useState("");
+    const [password, setPassword] = useState("");
 
     const handleLogin = () => {
-        navigate('/dashboard/user');
+        login({userName, password}).then((response) => {
+            if (response && response.id) {
+                localStorage.setItem("userId", response.id);
+                localStorage.setItem("userName", response.userName);
+                navigate('/dashboard/user');
+            }
+        })
     }
 
     const handleRegister = () => {
@@ -26,7 +36,8 @@ function LoginPage() {
                 <Typography variant={'h4'} component={'h1'} textAlign={'center'} gutterBottom>
                     Iniciar sesión
                 </Typography>
-                <LoginForm handleLogin={handleLogin}/>
+                <LoginForm password={password} setPassword={setPassword} userName={userName} setUserName={setUserName}
+                           handleLogin={handleLogin}/>
                 <Button variant={'text'} color={'secondary'}
                         onClick={handleForgotPassword}>
                     He olvidado mi contraseña

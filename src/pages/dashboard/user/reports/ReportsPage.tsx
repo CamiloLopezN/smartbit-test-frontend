@@ -16,8 +16,18 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {useEffect, useState} from 'react';
 import dayjs, {Dayjs} from 'dayjs';
-import {getBudgetVsExecuted, getMovements,} from '../../../../api/reportsServices';
-import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis,} from 'recharts';
+import {getBudgetVsExecuted, getMovements} from '../../../../api/reportsServices';
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Legend,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
+import {format} from 'date-fns';
 
 function ReportsPage() {
     const [startDate, setStartDate] = useState<Dayjs>(dayjs().startOf('month'));
@@ -27,15 +37,31 @@ function ReportsPage() {
 
     const userId = "bc0b679d-d8f4-4389-a7fb-ef721da10a09";
 
-
     const loadReports = async () => {
         const [movementsData, budgetData] = await Promise.all([
             getMovements(userId, startDate.toISOString(), endDate.toISOString()),
             getBudgetVsExecuted(userId, startDate.toISOString(), endDate.toISOString()),
         ]);
 
-        setMovements(movementsData);
-        setBudgetChart(budgetData);
+        const deposits = movementsData?.deposits || [];
+        const expenses = movementsData?.expenses || [];
+
+        const parsedDeposits = deposits.map((d: any) => ({
+            date: d.date,
+            type: 'Depósito',
+            description: d.description,
+            amount: d.amount,
+        }));
+
+        const parsedExpenses = expenses.map((e: any) => ({
+            date: e.date,
+            type: 'Gasto',
+            description: e.observations,
+            amount: e.totalAmount,
+        }));
+
+        setMovements([...parsedDeposits, ...parsedExpenses]);
+        setBudgetChart(budgetData || []);
     };
 
     useEffect(() => {
@@ -81,15 +107,14 @@ function ReportsPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {Array.isArray(movements) &&
-                                movements.map((m, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell>{format(new Date(m.date), 'dd/MM/yyyy')}</TableCell>
-                                        <TableCell>{m.type}</TableCell>
-                                        <TableCell>{m.description}</TableCell>
-                                        <TableCell>${m.amount.toFixed(2)}</TableCell>
-                                    </TableRow>
-                                ))}
+                            {movements.map((m, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{format(new Date(m.date), 'dd/MM/yyyy')}</TableCell>
+                                    <TableCell>{m.type}</TableCell>
+                                    <TableCell>{m.description}</TableCell>
+                                    <TableCell>${m.amount.toFixed(2)}</TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -100,7 +125,7 @@ function ReportsPage() {
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={budgetChart}>
                         <CartesianGrid strokeDasharray="3 3"/>
-                        <XAxis dataKey="expenseType"/>
+                        <XAxis dataKey="expenseTypeId"/>
                         <YAxis/>
                         <Tooltip/>
                         <Legend/>

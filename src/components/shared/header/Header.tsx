@@ -12,10 +12,9 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import {settings, userPages} from "../../../utils/contants/navigation.ts";
 import {useLocation, useNavigate} from "react-router-dom";
-import { LightMode } from '@mui/icons-material';
+import {LightMode} from '@mui/icons-material';
 
 function Header() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -48,6 +47,20 @@ function Header() {
         const current = userPages.find(page => pathName.pathname.includes(page.path))?.label || null;
         setCurrentPage(current);
     }, [pathName]);
+
+    const handleSettingsClick = (setting: string) => {
+        if (setting === 'home') {
+            navigate(`/dashboard/user/`);
+        }
+
+        if (setting === 'logout') {
+            localStorage.clear();
+            navigate(`/login`);
+        }
+
+        handleCloseUserMenu()
+
+    }
 
 
     return (
@@ -137,8 +150,8 @@ function Header() {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography sx={{textAlign: 'center'}}>{setting}</Typography>
+                                <MenuItem key={setting.label} onClick={() => handleSettingsClick(setting.path)}>
+                                    <Typography sx={{textAlign: 'center'}}>{setting.label}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>

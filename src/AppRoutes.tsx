@@ -7,11 +7,12 @@ import MovementsPage from "./pages/dashboard/user/movements/MovementsPage.tsx";
 import ReportsPage from "./pages/dashboard/user/reports/ReportsPage.tsx";
 import AdminPage from "./pages/dashboard/admin/AdminPage.tsx";
 import MaintenancesPage from "./pages/dashboard/user/maintenances/MaintenancesPage.tsx";
+import PublicRoute from "./PublicRoute.tsx";
 
 function AppRoutes() {
     return (
         <Routes>
-            <Route path="/" element={<LoginPage/>}/>
+            <Route path="/" element={<PublicRoute><LoginPage/></PublicRoute>}/>
             <Route
                 path="/dashboard"
                 element={
